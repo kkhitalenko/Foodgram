@@ -32,6 +32,7 @@ ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
     # Local apps
+    'api.apps.ApiConfig',
     'users.apps.UsersConfig',
 
     # Django apps
