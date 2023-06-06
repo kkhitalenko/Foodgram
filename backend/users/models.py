@@ -15,3 +15,28 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.email
+
+
+class Subscription(models.Model):
+    """ORM model for subscription."""
+
+    subscriber = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='subscriber',
+        verbose_name='Подписчик'
+    )
+    author = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='author',
+        verbose_name='Автор'
+    )
+
+    class Meta:
+        verbose_name = 'Подписка'
+        verbose_name_plural = 'Подписки'
+        constraints = [
+            models.UniqueConstraint(fields=['subscriber', 'author'],
+                                    name='unique subscription')
+        ]
