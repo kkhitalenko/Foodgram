@@ -34,6 +34,7 @@ INSTALLED_APPS = [
 
     # Local apps
     'api.apps.ApiConfig',
+    'recipes.apps.RecipesConfig',
     'users.apps.UsersConfig',
 ]
 
