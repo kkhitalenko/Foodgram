@@ -1,15 +1,20 @@
+from api.filters import IngredientSearch
 from api.pagination import StandardResultsSetPagination
-from api.serializers import SubscriptionSerializer
+from api.serializers import (IngredientSerializer, SubscriptionSerializer,
+                             TagSerializer)
 from django.shortcuts import get_object_or_404
 from djoser.views import UserViewSet
-from rest_framework import status
+from recipes.models import Ingredient, Tag
+from rest_framework import status, viewsets
 from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from users.models import Subscription, User
 
 
 class CustomUserViewSet(UserViewSet):
+    """ViewSet for users."""
+
     pagination_class = StandardResultsSetPagination
 
     @action(methods=['DELETE', 'POST'], detail=True,
@@ -45,3 +50,21 @@ class CustomUserViewSet(UserViewSet):
         serializer = SubscriptionSerializer(page, context={'request': request},
                                             many=True)
         return self.get_paginated_response(serializer.data)
+
+
+class TagViewSet(viewsets.ReadOnlyModelViewSet):
+    """ViewSet for tags."""
+
+    queryset = Tag.objects.all()
+    serializer_class = TagSerializer
+    permission_classes = [AllowAny]
+
+
+class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
+    """ViewSet for ingredients."""
+
+    queryset = Ingredient.objects.all()
+    serializer_class = IngredientSerializer
+    permission_classes = [AllowAny]
+    filter_backends = (IngredientSearch,)
+    search_fields = ('^name',)
