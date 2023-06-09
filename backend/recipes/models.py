@@ -7,8 +7,6 @@ class Ingredient(models.Model):
     """ORM model for ingredient."""
 
     name = models.CharField(max_length=200, verbose_name='Ингридиент')
-    quantity = models.IntegerField(validators=[MinValueValidator(1)],
-                                   verbose_name='Количество')
     measurement_unit = models.CharField(max_length=200,
                                         verbose_name='Единица измерения')
 
