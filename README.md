@@ -10,9 +10,11 @@ Foodgram - продуктовый помощник, онлайн-сервис и
 ```
 git clone git@github.com:kkhitalenko/foodgram-project-react/
 ```
+
 ```
 cd foodgram-project-react/
 ```
+
 Cоздать и активировать виртуальное окружение:
 
 ```
@@ -30,9 +32,14 @@ python -m venv env
     ```
     source env/scripts/activate
     ```
+
+Перейти в папку backend/
+
 ```
 cd backend/
 ```
+
+Обновить менеджер пакетов pip
 
 ```
 python -m pip install --upgrade pip
@@ -58,19 +65,23 @@ python manage.py runserver
 
 ### Получить документацию:
 - перейти в папку infra/
+
 ```
 cd ../infra/
 ```
+
 - выполнить команду:
+
 ```
 docker-compose up
 ```
+
 - документация и примеры запросов будут досупны по адресу:
+
 ```
 http://localhost/api/docs/redoc.html
 ```
 
 
 Используемые технологии: DRF, REST API, Redoc, Docker, Docker-Сompose, Docker Hub, Nginx, Gunicorn, Github Actions, Yandex.Cloud
-
 
