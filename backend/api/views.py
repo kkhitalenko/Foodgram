@@ -1,10 +1,14 @@
 from api.filters import IngredientSearch
 from api.pagination import StandardResultsSetPagination
-from api.serializers import (IngredientSerializer, SubscriptionSerializer,
+from api.permissions import RecipePermission
+from api.serializers import (IngredientSerializer,
+                             RecipeCreateUpdateSerializer,
+                             RecipeViewSerializer, SubscriptionSerializer,
                              TagSerializer)
 from django.shortcuts import get_object_or_404
+from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
-from recipes.models import Ingredient, Tag
+from recipes.models import Ingredient, Recipe, Tag
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -66,5 +70,21 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
     permission_classes = [AllowAny]
-    filter_backends = (IngredientSearch,)
-    search_fields = ('^name',)
+    filter_backends = [IngredientSearch]
+    search_fields = ['^name']
+
+
+class RecipeViewSet(viewsets.ModelViewSet):
+    """ViewSet for recipes."""
+
+    queryset = Recipe.objects.all()
+    pagination_class = StandardResultsSetPagination
+    permission_classes = [RecipePermission]
+    filter_backends = [DjangoFilterBackend]
+    # filterset_class = ...
+    http_method_names = ('get', 'post', 'patch', 'delete',)
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return RecipeViewSerializer
+        return RecipeCreateUpdateSerializer
