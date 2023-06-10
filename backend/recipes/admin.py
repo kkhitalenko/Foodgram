@@ -19,7 +19,7 @@ class TagAdmin(admin.ModelAdmin):
 
 @admin.register(IngredientInRecipe)
 class IngredientInRecipeAdmin(admin.ModelAdmin):
-    list_display = ('id', 'ingredient', 'recipe', 'quantity')
+    list_display = ('id', 'ingredient', 'recipe', 'amount')
 
 
 @admin.register(Recipe)

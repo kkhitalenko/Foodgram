@@ -73,8 +73,8 @@ class IngredientInRecipe(models.Model):
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE,
                                related_name='ingredient_in_recipe',
                                verbose_name='Рецепт')
-    quantity = models.IntegerField(validators=[MinValueValidator(1)],
-                                   verbose_name='Количество')
+    amount = models.IntegerField(validators=[MinValueValidator(1)],
+                                 verbose_name='Количество')
 
     class Meta:
         verbose_name = verbose_name_plural = 'Количество ингридиента в рецепте'
@@ -83,4 +83,4 @@ class IngredientInRecipe(models.Model):
                 name='unique_ingredient_recipe')]
 
     def __str__(self):
-        return f'{self.quantity}'
+        return f'{self.amount}'
