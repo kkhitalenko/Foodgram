@@ -1,6 +1,7 @@
 from djoser.serializers import UserCreateSerializer, UserSerializer
 from drf_extra_fields.fields import Base64ImageField
-from recipes.models import Ingredient, IngredientInRecipe, Recipe, Tag
+from recipes.models import (Favorite, Ingredient, IngredientInRecipe, Recipe,
+                            ShoppingCart, Tag)
 from rest_framework import serializers
 from users.models import User
 
@@ -27,15 +28,6 @@ class CustomUserCreateSerializer(UserCreateSerializer):
     class Meta:
         model = User
         fields = STANDART_USER_FIELDS + ('password',)
-
-
-class SubscriptionSerializer(CustomUserSerializer):
-    """Serializer for subscriptions."""
-
-    class Meta(CustomUserSerializer.Meta):
-        # fields = + ( 'is_subscribed', 'recipes', "recipes", 'recipes_count')
-        fields = STANDART_USER_FIELDS + ('is_subscribed',)
-        read_only_fields = STANDART_USER_FIELDS + ('is_subscribed',)
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -78,26 +70,50 @@ class IngredientInRecipeSerializer(serializers.ModelSerializer):
         fields = ('id', 'amount')
 
 
+class SubscriptionSerializer(CustomUserSerializer):
+    """Serializer for subscriptions."""
+    # recipes = serializers.SerializerMethodField(read_only=True)
+    recipes_count = serializers.SerializerMethodField(read_only=True)
+
+    class Meta(CustomUserSerializer.Meta):
+        fields = STANDART_USER_FIELDS + ('is_subscribed', 'recipes_count')
+        # fields = STANDART_USER_FIELDS + ('is_subscribed', 'recipes',
+        #                                  'recipes_count')
+        read_only_fields = fields
+
+    # def get_recipes(self, obj):
+    #     ...
+
+    def get_recipes_count(self, obj):
+        return Recipe.objects.filter(author=obj).count()
+
+
 class RecipeViewSerializer(serializers.ModelSerializer):
     """Serializer of GET method for /recipes/ and /recipes/id/ endpoints."""
 
     tags = TagSerializer(many=True)
     author = CustomUserSerializer()
     ingredients = IngredientSerializer(many=True)
-    # is_favorited = serializers.SerializerMethodField()
-    # is_in_shopping_cart = serializers.SerializerMethodField()
+    is_favorited = serializers.SerializerMethodField()
+    is_in_shopping_cart = serializers.SerializerMethodField()
 
     class Meta:
         model = Recipe
-        # fields = ('id', 'tags', 'author', 'ingredients', 'is_favorited',
-        #           'is_in_shopping_cart', 'name', 'image', 'text',
-        #           'cooking_time')
-        fields = ('id', 'tags', 'author', 'ingredients', 'name', 'image',
-                  'text', 'cooking_time')
+        fields = ('id', 'tags', 'author', 'ingredients', 'is_favorited',
+                  'is_in_shopping_cart', 'name', 'image', 'text',
+                  'cooking_time')
 
-    # def get_is_favorite():
+    def get_is_favorited(self, obj):
+        request = self.context.get('request')
+        if request and request.user.is_authenticated:
+            return Favorite.objects.filter(user=request.user,
+                                           recipe_id=obj.id).exists()
 
-    # def get_is_in_shopping_cart():
+    def get_is_in_shopping_cart(self, obj):
+        request = self.context.get('request')
+        if request and request.user.is_authenticated:
+            return ShoppingCart.objects.filter(user=request.user,
+                                               recipe_id=obj.id).exists()
 
 
 class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
@@ -165,3 +181,12 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
             instance.ingredients.clear()
             self.add_ingredients(instance, ingredients)
         return super().update(instance, validated_data)
+
+
+class AddToFavoriteOrShoppingCartSerializer(serializers.ModelSerializer):
+    """Serializer for adding to favorite or shopping cart."""
+
+    class Meta:
+        model = Recipe
+        fields = ('id',  'name', 'image', 'cooking_time')
+        read_only_fields = fields
