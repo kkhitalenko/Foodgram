@@ -79,8 +79,42 @@ class IngredientInRecipe(models.Model):
     class Meta:
         verbose_name = verbose_name_plural = 'Количество ингридиента в рецепте'
         constraints = [models.UniqueConstraint(
-                fields=('ingredient', 'recipe'),
-                name='unique_ingredient_recipe')]
+            fields=('ingredient', 'recipe'), name='unique_ingredient_recipe')]
 
     def __str__(self):
         return f'{self.amount}'
+
+
+class Favorite(models.Model):
+    """ORM model for favorite recipes."""
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE,
+                             related_name='favorite_recipes',
+                             verbose_name='Пользователь')
+    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE,
+                               related_name='favorite_recipes',
+                               verbose_name='Рецепт')
+
+    class Meta:
+        verbose_name = verbose_name_plural = 'Избранное'
+        constraints = [models.UniqueConstraint(fields=('user', 'recipe'),
+                                               name='unique_user_recipe')]
+
+    def __str__(self):
+        return f'{self.user}-{self.recipe}'
+
+
+class ShoppingCart(models.Model):
+    """ORM model for shopping cart."""
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE,
+                             related_name='shopping_cart',
+                             verbose_name='Пользователь')
+    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE,
+                               related_name='shopping_cart',
+                               verbose_name='Рецепт')
+
+    class Meta:
+        verbose_name = verbose_name_plural = 'Список покупок'
+        constraints = [models.UniqueConstraint(fields=('user', 'recipe'),
+                                               name='unique_shopping_cart')]
