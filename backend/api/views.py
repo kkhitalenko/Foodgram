@@ -6,10 +6,13 @@ from api.serializers import (AddToFavoriteOrShoppingCartSerializer,
                              RecipeCreateUpdateSerializer,
                              RecipeViewSerializer, SubscriptionSerializer,
                              TagSerializer)
+from django.db.models import Sum
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
-from recipes.models import Favorite, Ingredient, Recipe, ShoppingCart, Tag
+from recipes.models import (Favorite, Ingredient, IngredientInRecipe, Recipe,
+                            ShoppingCart, Tag)
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -104,7 +107,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     @staticmethod
-    def delete(pk, model, user):
+    def delete_recipe(pk, model, user):
         recipe = Recipe.objects.get(id=pk)
         object = model.objects.filter(user=user, recipe_id=pk)
         if object.exists():
@@ -118,7 +121,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def favorite(self, request, pk):
         user = request.user
         if request.method == 'DELETE':
-            return self.delete(pk, Favorite, user)
+            return self.delete_recipe(pk, Favorite, user)
         return self.add(pk, Favorite, user)
 
     @action(methods=['DELETE', 'POST'], detail=True,
@@ -126,5 +129,25 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def shopping_cart(self, request, pk):
         user = request.user
         if request.method == 'DELETE':
-            return self.delete(pk, ShoppingCart, user)
+            return self.delete_recipe(pk, ShoppingCart, user)
         return self.add(pk, ShoppingCart, user)
+
+    @action(methods=['GET'], detail=False,
+            permission_classes=[IsAuthenticated])
+    def download_shopping_cart(self, request):
+        ingredients = IngredientInRecipe.objects.filter(
+            recipe__shopping_cart__user=request.user).values(
+            'ingredient__name', 'ingredient__measurement_unit').annotate(
+            amount=Sum('amount'))
+        header = 'Cписок покупок'
+        for index, ingredient in enumerate(ingredients):
+            name = ingredient['ingredient__name']
+            amount = ingredient['amount']
+            current_ingredient = ingredient['ingredient__measurement_unit']
+            header += f'\n {name}: {amount} {current_ingredient}'
+            if index < ingredients.count() - 1:
+                header += ','
+        file = 'shopping_cart'
+        response = HttpResponse(header, 'Content-Type: application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="{file}.pdf"'
+        return response
