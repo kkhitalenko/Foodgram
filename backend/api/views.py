@@ -1,4 +1,4 @@
-from api.filters import IngredientSearch
+from api.filters import IngredientSearch, RecipeFilter
 from api.pagination import StandardResultsSetPagination
 from api.permissions import RecipePermission
 from api.serializers import (AddToFavoriteOrShoppingCartSerializer,
@@ -87,7 +87,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     pagination_class = StandardResultsSetPagination
     permission_classes = [RecipePermission]
     filter_backends = [DjangoFilterBackend]
-    # filterset_class = ...
+    filterset_class = RecipeFilter
     http_method_names = ('get', 'post', 'patch', 'delete',)
 
     def get_serializer_class(self):
