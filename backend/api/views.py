@@ -39,7 +39,8 @@ class CustomUserViewSet(UserViewSet):
                 return Response(status=status.HTTP_204_NO_CONTENT)
             return Response(
                 {'errors': f'Вы не подписаны на {author.username}'},
-                status=status.HTTP_400_BAD_REQUEST)
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
         if subscription.exists():
             return Response(
@@ -146,9 +147,11 @@ class RecipeViewSet(viewsets.ModelViewSet):
             permission_classes=[IsAuthenticated])
     def download_shopping_cart(self, request):
         ingredients = IngredientInRecipe.objects.filter(
-            recipe__shopping_cart__user=request.user).values(
-            'ingredient__name', 'ingredient__measurement_unit').annotate(
-            amount=Sum('amount'))
+            recipe__shopping_cart__user=request.user
+        ).values('ingredient__name',
+                 'ingredient__measurement_unit').annotate(
+            amount=Sum('amount')
+        )
         header = 'Cписок покупок'
         for index, ingredient in enumerate(ingredients):
             name = ingredient['ingredient__name']

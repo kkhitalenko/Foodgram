@@ -1,4 +1,5 @@
 from django.contrib import admin
+
 from recipes.models import (Favorite, Ingredient, IngredientInRecipe, Recipe,
                             ShoppingCart, Tag)
 
@@ -34,6 +35,7 @@ class RecipeAdmin(admin.ModelAdmin):
     @admin.display(description='Добавлено в избранное')
     def added_to_favorite(self, obj):
         return (Favorite.objects.filter(recipe=obj)).count()
+
 
 @admin.register(Favorite)
 class FavoriteAdmin(admin.ModelAdmin):

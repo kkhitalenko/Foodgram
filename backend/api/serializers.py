@@ -23,7 +23,8 @@ class CustomUserSerializer(UserSerializer):
         if request is None or request.user.is_anonymous:
             return False
         return Subscription.objects.filter(
-            subscriber=request.user, author=obj.id).exists()
+            subscriber=request.user, author=obj.id
+        ).exists()
 
 
 class CustomUserCreateSerializer(UserCreateSerializer):
@@ -56,7 +57,8 @@ class IngredientRecipeSerializer(serializers.ModelSerializer):
     id = serializers.ReadOnlyField(source='ingredient.id')
     name = serializers.ReadOnlyField(source='ingredient.name')
     measurement_unit = serializers.ReadOnlyField(
-        source='ingredient.measurement_unit')
+        source='ingredient.measurement_unit'
+    )
 
     class Meta:
         model = IngredientInRecipe
@@ -91,7 +93,8 @@ class SubscriptionSerializer(CustomUserSerializer):
         if recipes_limit:
             queryset = queryset[:int(recipes_limit)]
         serializer = AddToFavoriteOrShoppingCartSerializer(
-            queryset, many=True)
+            queryset, many=True
+        )
         return serializer.data
 
     def get_recipes_count(self, obj):
@@ -150,12 +153,10 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('Укажите ингридиенты')
         ingredients_list = []
         for ingredient in ingredients:
-            if int(ingredient['amount']) < 1:
-                raise serializers.ValidationError({
-                    'amount': 'Укажите количество ингридиента'})
             if ingredient['id'] in ingredients_list:
                 raise serializers.ValidationError({
-                    'ingredient': 'Ингредиент уже добавлен'})
+                    'ingredient': 'Ингредиент уже добавлен'
+                })
             ingredients_list.append(ingredient['id'])
         return data
 
@@ -167,7 +168,8 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
             amount = i['amount']
             ingredients_in_recipe_list.append(
                 IngredientInRecipe(ingredient=ingredient, recipe=recipe,
-                                   amount=amount))
+                                   amount=amount)
+            )
         IngredientInRecipe.objects.bulk_create(ingredients_in_recipe_list)
 
     def create(self, validated_data):
@@ -192,7 +194,8 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         return RecipeViewSerializer(
-            instance, context={'request': self.context.get('request')}).data
+            instance, context={'request': self.context.get('request')}
+        ).data
 
 
 class AddToFavoriteOrShoppingCartSerializer(serializers.ModelSerializer):
@@ -200,5 +203,5 @@ class AddToFavoriteOrShoppingCartSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Recipe
-        fields = ('id',  'name', 'image', 'cooking_time')
+        fields = ('id', 'name', 'image', 'cooking_time')
         read_only_fields = fields
