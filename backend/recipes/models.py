@@ -1,4 +1,4 @@
-from django.core.validators import MinValueValidator
+from django.core.validators import MinValueValidator, RegexValidator
 from django.db import models
 
 from users.models import User
@@ -26,7 +26,11 @@ class Tag(models.Model):
     """ORM model for tag."""
 
     name = models.CharField(max_length=200, unique=True, verbose_name='Тег')
-    color = models.CharField(max_length=7, unique=True, verbose_name='HEX-код')
+    color = models.CharField(max_length=7, unique=True, verbose_name='HEX-код',
+                             validators=[
+                                 RegexValidator(regex="^#([A-Fa-f0-9]{6})$",
+                                                message='Неверный HEX формат')
+                             ])
     slug = models.SlugField(max_length=200, unique=True, verbose_name='Адрес')
 
     class Meta:
