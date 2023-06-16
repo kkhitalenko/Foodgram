@@ -98,15 +98,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return RecipeViewSerializer
         return RecipeCreateUpdateSerializer
 
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        serializer = RecipeViewSerializer(instance=serializer.instance)
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED,
-                        headers=headers)
-
     @staticmethod
     def add(pk, model, user):
         recipe = Recipe.objects.get(id=pk)
