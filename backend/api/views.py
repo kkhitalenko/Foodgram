@@ -5,7 +5,8 @@ from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import (AllowAny, IsAuthenticated,
+                                        IsAuthenticatedOrReadOnly)
 from rest_framework.response import Response
 
 from api.filters import IngredientSearch, RecipeFilter
@@ -87,7 +88,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     queryset = Recipe.objects.all()
     pagination_class = StandardResultsSetPagination
-    permission_classes = [RecipePermission]
+    permission_classes = [IsAuthenticatedOrReadOnly | RecipePermission]
     filter_backends = [DjangoFilterBackend]
     filterset_class = RecipeFilter
     http_method_names = ('get', 'post', 'patch', 'delete',)
