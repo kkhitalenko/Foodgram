@@ -90,7 +90,7 @@ class SubscriptionSerializer(CustomUserSerializer):
         request = self.context.get('request')
         queryset = Recipe.objects.filter(author=obj)
         recipes_limit = request.query_params.get('recipes_limit')
-        if recipes_limit:
+        if recipes_limit and recipes_limit.isdigit():
             queryset = queryset[:int(recipes_limit)]
         serializer = AddToFavoriteOrShoppingCartSerializer(
             queryset, many=True
