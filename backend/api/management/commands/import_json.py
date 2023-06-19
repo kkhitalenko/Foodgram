@@ -4,7 +4,7 @@ from django.core.management.base import BaseCommand
 
 from api.serializers import IngredientSerializer
 
-filepath = '../data/ingredients.json'
+filepath = 'data/ingredients.json'
 
 
 class Command(BaseCommand):
