@@ -6,6 +6,7 @@ from rest_framework import serializers
 from recipes.models import (Favorite, Ingredient, IngredientInRecipe, Recipe,
                             ShoppingCart, Tag)
 from users.models import Subscription, User
+
 from .constants import STANDART_USER_FIELDS
 
 
