@@ -1,20 +1,44 @@
-![foodgram_workflow](https://github.com/kkhitalenko/foodgram-project-react/actions/workflows/main.yml/badge.svg)
+![foodgram_workflow](https://github.com/kkhitalenko/Foodgram/actions/workflows/main.yml/badge.svg)
 
 # Foodgram
 Foodgram - продуктовый помощник, онлайн-сервис и API для него. На этом сервисе пользователи могут публиковать рецепты, подписываться на публикации других пользователей, добавлять понравившиеся рецепты в список «Избранное», а перед походом в магазин скачивать список продуктов, необходимых для приготовления одного или нескольких выбранных блюд
 
-Необходимые технологии: Docker, Docker-Compose
+<details>
+   <summary>Исходные данные</summary> 
+  
+- фронтенд на React;
+- техническое описание проекта;
+- Redoc спецификация API;
+- список ингредиентов в формате JSON для загрузки в базу Postgres
 
-## Как запустить проект на удалённом сервере:
+</details>
+
+<details>
+   <summary>Что было сделано</summary> 
+  
+- создан Django-проект;
+- создан API-сервис на базе проекта;
+- настроено взаимодействие с фронтендом, написанным на React;
+- созданы образы и запушены на DockerHub;
+- созданы, развёрнуты и запущены на сервере мультиконтейнерные приложения;
+- настроен CI/CD
+</details>
+
+
+
+<details>
+   <summary>Запуск проекта на удалённом сервере</summary> 
+
+Необходимые технологии: Docker, Docker-Compose
 
 - Клонировать репозиторий и перейти в него в командной строке:
 
 ```
-git clone git@github.com:kkhitalenko/foodgram-project-react/
+git clone git@github.com:kkhitalenko/Foodgram/
 ```
 
 ```
-cd foodgram-project-react/infra/
+cd Foodgram/infra/
 ```
 - В файле nginx.conf указать свой IP-адрес или доменное имя в строке server_name
 - Скопировать nginx.conf и docker-compose.yml на сервер с помощию sftp:
@@ -55,14 +79,7 @@ sudo docker-compose up -d --build
   sudo docker-compose exec backend python manage.py createsuperuser
   sudo docker-compose exec backend python manage.py import_json
   ```
-  
-## Доступность проекта:
-Проект доступен по адресу http://84.252.139.113/
-
-Учетные данные для входа через администратора:
-- логин: admin
-- почта: admin@admin.ru 
-- пароль: admin12345admin
+</details>
 
 
 ## :hammer_and_wrench: Используемые технологии:
